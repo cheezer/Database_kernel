@@ -44,23 +44,9 @@ Status BTreeFileScan::get_next (RID & rid, void* keyptr)
 	while (true)
 	{
 		if (currentRID.slotNo == -1)
-		{
 			s = leaf->get_first(currentRID, keyptr, rid);
-			if (keyR != NULL && keyCompare(keyptr, keyR, type) > 0)
-			{
-				MINIBASE_BM->unpinPage(currentRID.pageNo);
-				return DONE;
-			}
-		}
 		else
-		{
 			s = leaf->get_next(currentRID, keyptr, rid);
-			if (keyR != NULL && keyCompare(keyptr, keyR, type) > 0)
-			{
-				MINIBASE_BM->unpinPage(currentRID.pageNo);
-				return DONE;
-			}
-		}
 		if (s == NOMORERECS)
 		{
 			RID nextRID;
@@ -73,7 +59,13 @@ Status BTreeFileScan::get_next (RID & rid, void* keyptr)
 			MINIBASE_BM->pinPage(currentRID.pageNo, page);
 			leaf = (BTLeafPage*)page;
 		}
-		else break;
+		else if (keyR != NULL && keyCompare(keyptr, keyR, type) > 0)
+		{
+			MINIBASE_BM->unpinPage(currentRID.pageNo);
+			return DONE;
+		}
+		else
+			break;
 	}
 	delable = true;
 	return OK;

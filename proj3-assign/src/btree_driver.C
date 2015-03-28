@@ -35,12 +35,11 @@ Status BTreeTest::runTests(){
 		exit(1);
 	}
 
-	//TBC
+
 	test1();
 	test2();
 	test3();
 	test4();
-
 
 
 	delete minibase_globals;
@@ -52,8 +51,6 @@ Status BTreeTest::runTests(){
 	return OK;
 
 }
-
-
 
 void BTreeTest::test_scan(IndexFileScan* scan)
 {
@@ -154,10 +151,8 @@ int key;
         if (btf->insert(&key, rid) != OK) {
  	   cout << "Inserting record with key = " << key << "  [pageNo,slotNo] = ";
 	   cout << "[" << rid.pageNo<<","<<rid.slotNo<<"] failed!!\n" <<endl;
-            //minibase_errors.show_errors();
+            minibase_errors.show_errors();
         }
-        //else cout << i << endl;
-
     }
 
     // test delete()
@@ -374,11 +369,12 @@ void BTreeTest::test3() {
     ifstream keysamples;
 
     keysamples.open("keys",ios::in);
-    if (!keysamples){
+    if (!keysamples) {
       cout << "keys not found.\n";
       cout << " there is a copy in $MINIBASE_HOME/programs/minibase "<< endl;
       return;
     }
+
 
     // test create()
     btf = new BTreeFile(status, "BTreeIndex", attrString, keysize);
@@ -420,6 +416,7 @@ void BTreeTest::test3() {
     else
 	cout << "\nSuccessfully deleted record with key = " << lokey << endl;
     cout << "\n---------------End of delete----------------" << endl;
+
     delete btf;
     btf = new BTreeFile(status, "BTreeIndex");
   
@@ -438,6 +435,7 @@ void BTreeTest::test3() {
     delete scan;                                                                
     cout << "\n------End of MaxRangeScan with hikey = "<<hikey<< "------\n";
     
+
     //MinRangeScan;
     scan = btf->new_scan(lokey, NULL);                                         
     cout << "\n\n-----Start MinRangeScan with lokey = "<<lokey<< "------\n"; 
@@ -639,11 +637,11 @@ cout << " key " << values[i].key
     qsort( values, num, sizeof(dummy), eval1);
     
     cout << "\n------Start to insert " << num << "  records------" << endl;
+
     for (i=0; i < num; i++){
         //cout << " Inserting key " << values[i].key << " order " 
              //<< values[i].sort_value1 << endl;
-
-        if (btf->insert(&(values[i].key), values[i].r) != OK) {
+       	if (btf->insert(&(values[i].key), values[i].r) != OK) {
             minibase_errors.show_errors();
         }
     }
@@ -654,17 +652,17 @@ cout << " key " << values[i].key
     // test delete()
     cout << "\n\n------ Delete the first " << num_deletes 
          << " of the records-----" << endl;
-    //btf->printTree();
 
     // place records in deletion order
     qsort(values, num, sizeof(dummy), eval2);
 
     for (i = 0; i < num_deletes; i++) {
-
-	    /*cout << "Deleting record with key = " << values[i].key
+/*
+	    cout << "Deleting record with key = " << values[i].key
                  << "  [pageNo,slotNo] = ";
 	    cout << "[" << values[i].r.pageNo<<","
-                 << values[i].r.slotNo << "]" <<endl;*/
+                 << values[i].r.slotNo << "]" <<endl;
+*/
 	    if (btf->Delete(&values[i].key, values[i].r) != OK) {
 	       minibase_errors.show_errors();
 	    }
